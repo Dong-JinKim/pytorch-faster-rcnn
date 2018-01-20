@@ -22,6 +22,7 @@ from model.nms_wrapper import nms
 
 from utils.timer import Timer
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 import numpy as np
 import os, cv2
 import argparse
@@ -103,7 +104,20 @@ def demo(net, im):
     return scores, boxes, nms_keep_indices
 
 
+def parse_args():
+    """Parse input arguments."""
+    parser = argparse.ArgumentParser(description='Extract scores and boxes')
+    parser.add_argument(
+        '--im_in_out_json',
+        dest='im_in_out_json',
+        default=None)
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == '__main__':
+    args = parse_args()
+
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
 
     saved_model_path = '/home/tanmay/Downloads/' + \
@@ -123,15 +137,20 @@ if __name__ == '__main__':
     net.eval()
     net.cuda()
 
-    images_in_out = [
-        {
-            'in_path': 'data/demo/000456.jpg', 
-            'out_dir': '/tmp/pytorch_faster_rcnn_demo/',
-            'prefix': '000456_'
-        }
-    ]
+    if args.im_in_out_json:
+        with open(args.im_in_out_json,'r') as file:
+            images_in_out = json.load(file)
 
-    for image_in_out in images_in_out:
+    else:
+        images_in_out = [
+            {
+                'in_path': 'data/demo/000456.jpg', 
+                'out_dir': '/tmp/pytorch_faster_rcnn_demo/',
+                'prefix': '000456_'
+            }
+        ]
+
+    for image_in_out in tqdm(images_in_out):
         im = cv2.imread(image_in_out['in_path'])
         
         scores, boxes, nms_keep_indices = demo(net,im)
@@ -150,5 +169,3 @@ if __name__ == '__main__':
         nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
         with open(nms_keep_indices_path,'w') as file:
             json.dump(nms_keep_indices,file)
-
-        print('Done!')
