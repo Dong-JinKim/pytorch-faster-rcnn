@@ -84,8 +84,9 @@ def demo(net, im):
     timer = Timer()
     timer.tic()
     scores, boxes = im_detect(net, im)
+    
     timer.toc()
-    print('Detection took {:.3f}s for {:d} object proposals'.format(timer.total_time(), boxes.shape[0]))
+    #print('Detection took {:.3f}s for {:d} object proposals'.format(timer.total_time(), boxes.shape[0]))
 
     # Visualize detections for each class
     CONF_THRESH = 0.8
@@ -154,17 +155,21 @@ if __name__ == '__main__':
         im = cv2.imread(image_in_out['in_path'])
         
         scores, boxes, nms_keep_indices = demo(net,im)
-        
+        fc7 = net._predictions['fc7'].data.cpu().numpy()
+
         out_dir = image_in_out['out_dir']
         prefix = image_in_out['prefix']
         if not os.path.exists(out_dir):
-            os.makedirs(out_path)
+            os.makedirs(out_dir)
         
         scores_path = os.path.join(out_dir,f'{prefix}scores.npy')
         np.save(scores_path,scores)
 
         boxes_path = os.path.join(out_dir,f'{prefix}boxes.npy')
         np.save(boxes_path,boxes)
+
+        fc7_path = os.path.join(out_dir,f'{prefix}fc7.npy')
+        np.save(fc7_path,fc7)
 
         nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
         with open(nms_keep_indices_path,'w') as file:
