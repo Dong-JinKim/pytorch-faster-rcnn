@@ -280,6 +280,7 @@ class Network(nn.Module):
     cls_prob = F.softmax(cls_score)
     bbox_pred = self.bbox_pred_net(fc7)
 
+    self._predictions["fc7"] = fc7
     self._predictions["cls_score"] = cls_score
     self._predictions["cls_pred"] = cls_pred
     self._predictions["cls_prob"] = cls_prob
