@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
         fc7_path = os.path.join(out_dir,f'{prefix}fc7.npy')
         np.save(fc7_path,fc7)
-
+        
         nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
         with open(nms_keep_indices_path,'w') as file:
             json.dump(nms_keep_indices,file)
