@@ -1,4 +1,0 @@
-{
-    "sync-rsync.local": "/Users/tanmay/Code/crunchy/pytorch-faster-rcnn/",
-    "sync-rsync.remote": "tanmay@crunchy:/home/tanmay/Code/pytorch-faster-rcnn/",
-}
