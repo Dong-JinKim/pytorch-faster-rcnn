@@ -9,7 +9,7 @@ tools/extract_boxes_scores_features.py
 
 The python script allows you to easily extract detected bounding boxes, object class scores, nms keep ids, and the last layer features that may then be used in a downstream application. The script takes in a single argument `im_in_out_json`. This is the path to a json file that specifies the paths to the images on which you want to run the object detector and the directory where you want the outputs to be saved. 
 
-# Structure of the `im_in_out_json` file
+# Structure of the `im_in_out.json` file
 
 I created this repository for a project that needed object detection outputs on the HICO-Det dataset. So here's a sample of what the .json file actually looked like:
 ```
