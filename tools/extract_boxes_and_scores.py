@@ -121,6 +121,7 @@ if __name__ == '__main__':
 
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
 
+    # Specify path to pretrained faster-rcnn checkpoint to load
     saved_model_path = '/home/tanmay/Downloads/' + \
         'pytorch_faster_rcnn_pretrained_models/' + \
         'res152_faster_rcnn_iter_1190000.pth' 
