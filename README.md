@@ -1,5 +1,5 @@
 # About this fork
-This is a fork of `ruotianluo/pytorch-faster-rcnn` with a simplified script to extract boxes, scores, and features from any set of images and dump them in a directory. Here I will just describe the additions I made to the original repository. For installation instructions please refer to the [ORIGINAL_README.md](ORIGINAL_README.md). 
+This is a fork of `ruotianluo/pytorch-faster-rcnn` with a simplified script to extract boxes, scores, nms keep ids, and features from any set of images and dump them in a directory. Here I will just describe the additions I made to the original repository. For installation instructions please refer to the [ORIGINAL_README.md](ORIGINAL_README.md). 
 
 # What's new?
 The following python script has been added:
@@ -7,7 +7,7 @@ The following python script has been added:
 tools/extract_boxes_scores_features.py
 ```
 
-The python script allows you to easily extract detected bounding boxes, object class scores, NMS keep ids, and the last layer features that may then be used in a downstream application. The script takes in a single argument `im_in_out_json`. This is the path to a json file that specifies the paths to the images on which you want to run the object detector and the directory where you want the outputs to be saved. 
+The python script allows you to easily extract detected bounding boxes, object class scores, nms keep ids, and the last layer features that may then be used in a downstream application. The script takes in a single argument `im_in_out_json`. This is the path to a json file that specifies the paths to the images on which you want to run the object detector and the directory where you want the outputs to be saved. 
 
 # Structure of the `im_in_out_json` file
 
