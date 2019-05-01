@@ -129,7 +129,7 @@ if __name__ == '__main__':
     assert_err = 'Saved model file not found'
     assert(os.path.isfile(saved_model_path)), assert_err
     
-    # load network
+    # Load network
     net = resnetv1(num_layers=152)
     net.create_architecture(
         81,
