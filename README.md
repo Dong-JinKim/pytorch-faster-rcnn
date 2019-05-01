@@ -11,7 +11,7 @@ The python script allows you to easily extract detected bounding boxes, object c
 
 # Structure of the `im_in_out_json` file
 
-I created this repository for a project on HICO-Det dataset. So here's a sample of what the .json file actually looked like:
+I created this repository for a project that needed object detection outputs on the HICO-Det dataset. So here's a sample of what the .json file actually looked like:
 ```
 [
     {
