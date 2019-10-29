@@ -114,10 +114,11 @@ class Network(nn.Module):
 
     # affine theta
     theta = Variable(rois.data.new(rois.size(0), 2, 3).zero_())
-    theta[:, 0, 0] = (x2 - x1) / (width - 1)
-    theta[:, 0 ,2] = (x1 + x2 - width + 1) / (width - 1)
-    theta[:, 1, 1] = (y2 - y1) / (height - 1)
-    theta[:, 1, 2] = (y1 + y2 - height + 1) / (height - 1)
+    
+    theta[:, 0, 0] = ((x2 - x1) / (width - 1)).squeeze()#----!!!
+    theta[:, 0 ,2] = ((x1 + x2 - width + 1) / (width - 1)).squeeze()#----!!!
+    theta[:, 1, 1] = ((y2 - y1) / (height - 1)).squeeze()#----!!!
+    theta[:, 1, 2] = ((y1 + y2 - height + 1) / (height - 1)).squeeze()#----!!!
 
     if max_pool:
       pre_pool_size = cfg.POOLING_SIZE * 2
@@ -382,6 +383,7 @@ class Network(nn.Module):
     return rois, cls_prob, bbox_pred
 
   def forward(self, image, im_info, gt_boxes=None, mode='TRAIN'):
+    
     self._image_gt_summaries['image'] = image
     self._image_gt_summaries['gt_boxes'] = gt_boxes
     self._image_gt_summaries['im_info'] = im_info

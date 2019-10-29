@@ -32,7 +32,7 @@ from nets.vgg16 import vgg16
 from nets.resnet_v1 import resnetv1
 
 import torch
-
+import pdb
 
 CLASSES = ('background',
 'person', 'bicycle', 'car','motorcycle','airplane','bus','train', 'truck', 'boat','traffic light',
@@ -120,10 +120,10 @@ if __name__ == '__main__':
     args = parse_args()
 
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
-
+    
     # Specify path to pretrained faster-rcnn checkpoint to load
-    saved_model_path = '/home/tanmay/Downloads/' + \
-        'pytorch_faster_rcnn_pretrained_models/' + \
+    saved_model_path = '/home/dongjin/Documents/msra_human_object_interaction/mmdetection/no_frills/' + \
+        'res152_tf/' + \
         'res152_faster_rcnn_iter_1190000.pth' 
 
     assert_err = 'Saved model file not found'
@@ -138,7 +138,15 @@ if __name__ == '__main__':
     net.load_state_dict(torch.load(saved_model_path))
     net.eval()
     net.cuda()
-
+    
+    net.rpn_net = torch.nn.DataParallel(net.rpn_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    net.rpn_cls_score_net = torch.nn.DataParallel(net.rpn_cls_score_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    net.rpn_bbox_pred_net = torch.nn.DataParallel(net.rpn_bbox_pred_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    net.cls_score_net = torch.nn.DataParallel(net.cls_score_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    net.bbox_pred_net = torch.nn.DataParallel(net.bbox_pred_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    net._roi_pool_layer = torch.nn.DataParallel(net._roi_pool_layer,device_ids=range(torch.cuda.device_count()))#----!!!!
+    
+    
     if args.im_in_out_json:
         with open(args.im_in_out_json,'r') as file:
             images_in_out = json.load(file)
@@ -153,16 +161,26 @@ if __name__ == '__main__':
         ]
 
     for image_in_out in tqdm(images_in_out):
+        #print(image_in_out['prefix'])
+        nofrills_feat = np.load('/data/DJKim/Datasets/HICO/hico_processed/faster_rcnn_boxes/'+image_in_out['prefix']+'fc7.npy') 
+        
+        out_dir = image_in_out['out_dir']
+        prefix = image_in_out['prefix']
+        if os.path.exists(os.path.join(out_dir,f'{prefix}nms_keep_indices.json')):#-----!!
+            continue
+            
         im = cv2.imread(image_in_out['in_path'])
         
         scores, boxes, nms_keep_indices = demo(net,im)
         fc7 = net._predictions['fc7'].data.cpu().numpy()
-
-        out_dir = image_in_out['out_dir']
-        prefix = image_in_out['prefix']
+        
+        if fc7.shape[0]==nofrills_feat.shape[0]:
+            print(np.linalg.norm(nofrills_feat-fc7))
+        else:
+            print('%d vs %d'%(fc7.shape[0],nofrills_feat.shape[0]))
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
-        
+        #pdb.set_trace()
         scores_path = os.path.join(out_dir,f'{prefix}scores.npy')
         np.save(scores_path,scores)
 
