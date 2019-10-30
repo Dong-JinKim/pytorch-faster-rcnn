@@ -13,6 +13,7 @@ from __future__ import print_function
 __sets = {}
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
+from datasets.hico import hico#----!!!!
 
 import numpy as np
 
@@ -39,7 +40,12 @@ for year in ['2015']:
     name = 'coco_{}_{}'.format(year, split)
     __sets[name] = (lambda split=split, year=year: coco(split, year))
 
-
+# Setups for HICO
+for split in ['test', 'train']:#---!!!
+    name = 'hico_{}'.format(split)
+    __sets[name] = (lambda split=split, year=year: hico(split, year))
+    
+    
 def get_imdb(name):
   """Get an imdb (image database) by name."""
   if name not in __sets:
