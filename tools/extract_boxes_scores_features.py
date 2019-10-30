@@ -135,7 +135,17 @@ if __name__ == '__main__':
         81,
         tag='default', 
         anchor_scales=[4, 8, 16, 32])
-    net.load_state_dict(torch.load(saved_model_path))
+    
+    state_dict = torch.load(saved_model_path)
+    
+    for ii in range(4):
+        state_dict[f'resnet.bn{ii+1}.num_batches_tracked'] = torch.LongTensor([0])[0]
+        state_dict[f'resnet.layer{ii+1}.0.downsample.1.num_batches_tracked'] = torch.LongTensor([0])[0]
+        for jj in range(40):
+            for kk in range(4):
+                state_dict[f'resnet.layer{ii+1}.{jj}.bn{kk+1}.num_batches_tracked'] = torch.LongTensor([0])[0]
+    #pdb.set_trace()
+    net.load_state_dict(state_dict)
     net.eval()
     net.cuda()
     
@@ -180,16 +190,16 @@ if __name__ == '__main__':
             print('%d vs %d'%(fc7.shape[0],nofrills_feat.shape[0]))
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
-        #pdb.set_trace()
-        scores_path = os.path.join(out_dir,f'{prefix}scores.npy')
-        np.save(scores_path,scores)
+        pdb.set_trace()
+        #scores_path = os.path.join(out_dir,f'{prefix}scores.npy')
+        #np.save(scores_path,scores)
 
-        boxes_path = os.path.join(out_dir,f'{prefix}boxes.npy')
-        np.save(boxes_path,boxes)
+        #boxes_path = os.path.join(out_dir,f'{prefix}boxes.npy')
+        #np.save(boxes_path,boxes)
 
-        fc7_path = os.path.join(out_dir,f'{prefix}fc7.npy')
-        np.save(fc7_path,fc7)
+        #fc7_path = os.path.join(out_dir,f'{prefix}fc7.npy')
+        #np.save(fc7_path,fc7)
         
-        nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
-        with open(nms_keep_indices_path,'w') as file:
-            json.dump(nms_keep_indices,file)
+        #nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
+        #with open(nms_keep_indices_path,'w') as file:
+        #    json.dump(nms_keep_indices,file)
