@@ -8,10 +8,11 @@ export PYTHONUNBUFFERED="True"
 GPU_ID=$1
 DATASET=$2
 NET=$3
+TAG=$4
 
 array=( $@ )
 len=${#array[@]}
-EXTRA_ARGS=${array[@]:3:$len}
+EXTRA_ARGS=${array[@]:4:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
 case ${DATASET} in
@@ -34,6 +35,14 @@ case ${DATASET} in
   coco)
     TRAIN_IMDB="coco_2014_train" #---!!!
     TEST_IMDB="coco_2014_val" #---!!!
+    STEPSIZE="[350000]"
+    ITERS=490000
+    ANCHORS="[4,8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  hico)
+    TRAIN_IMDB="hico_train" #---!!!
+    TEST_IMDB="hico_test" #---!!!
     STEPSIZE="[350000]"
     ITERS=490000
     ANCHORS="[4,8,16,32]"
@@ -65,7 +74,7 @@ if [ ! -f ${NET_FINAL}.index ]; then
       --imdbval ${TEST_IMDB} \
       --iters ${ITERS} \
       --cfg experiments/cfgs/${NET}.yml \
-      --tag ${EXTRA_ARGS_SLUG} \
+      --tag ${TAG} \
       --net ${NET} \
       --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} \
       TRAIN.STEPSIZE ${STEPSIZE} ${EXTRA_ARGS}
@@ -77,6 +86,7 @@ if [ ! -f ${NET_FINAL}.index ]; then
       --iters ${ITERS} \
       --cfg experiments/cfgs/${NET}.yml \
       --net ${NET} \
+      --tag ${TAG} \
       --set ANCHOR_SCALES ${ANCHORS} ANCHOR_RATIOS ${RATIOS} \
       TRAIN.STEPSIZE ${STEPSIZE} ${EXTRA_ARGS}
   fi
