@@ -59,7 +59,7 @@ class Network(nn.Module):
     self._add_gt_image()
     image = draw_bounding_boxes(\
                       self._gt_image, self._image_gt_summaries['gt_boxes'], self._image_gt_summaries['im_info'])
-    return tb.summary.image('GROUND_TRUTH', torch.FloatTensor(image[0]).permute(2,0,1)/255.0)#----!!!
+    return tb.summary.image('GROUND_TRUTH',image[0].astype('float32') / 255.0, dataformats='HWC')
 
   def _add_act_summary(self, key, tensor):
     return tb.summary.histogram('ACT/' + key + '/activations', tensor.data.cpu().numpy(), bins='auto'),
@@ -333,7 +333,7 @@ class Network(nn.Module):
     """
     summaries = []
     # Add image gt
-    summaries.append(self._add_gt_image_summary())
+    #summaries.append(self._add_gt_image_summary())#----!!!!
     # Add event_summaries
     for key, var in self._event_summaries.items():
       summaries.append(tb.summary.scalar(key, var.data[0]))
