@@ -122,10 +122,12 @@ if __name__ == '__main__':
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
     
     # Specify path to pretrained faster-rcnn checkpoint to load
-    saved_model_path = '/home/dongjin/Documents/msra_human_object_interaction/mmdetection/no_frills/' + \
-        'res152_tf/' + \
-        'res152_faster_rcnn_iter_1190000.pth' 
-
+    #saved_model_path = '/home/dongjin/Documents/msra_human_object_interaction/mmdetection/no_frills/' + \
+    #    'res152_tf/' + \
+    #    'res152_faster_rcnn_iter_1190000.pth' 
+    saved_model_path = '/home/dongjin/Documents/pytorch-faster-rcnn/output/res152/hico_train/1e6_RE/res152_faster_rcnn_iter_45000.pth'
+    
+    
     assert_err = 'Saved model file not found'
     assert(os.path.isfile(saved_model_path)), assert_err
     
@@ -144,17 +146,16 @@ if __name__ == '__main__':
         for jj in range(40):
             for kk in range(4):
                 state_dict[f'resnet.layer{ii+1}.{jj}.bn{kk+1}.num_batches_tracked'] = torch.LongTensor([0])[0]
-    #pdb.set_trace()
     net.load_state_dict(state_dict)
     net.eval()
     net.cuda()
     
-    net.rpn_net = torch.nn.DataParallel(net.rpn_net,device_ids=range(torch.cuda.device_count()))#----!!!!
-    net.rpn_cls_score_net = torch.nn.DataParallel(net.rpn_cls_score_net,device_ids=range(torch.cuda.device_count()))#----!!!!
-    net.rpn_bbox_pred_net = torch.nn.DataParallel(net.rpn_bbox_pred_net,device_ids=range(torch.cuda.device_count()))#----!!!!
-    net.cls_score_net = torch.nn.DataParallel(net.cls_score_net,device_ids=range(torch.cuda.device_count()))#----!!!!
-    net.bbox_pred_net = torch.nn.DataParallel(net.bbox_pred_net,device_ids=range(torch.cuda.device_count()))#----!!!!
-    net._roi_pool_layer = torch.nn.DataParallel(net._roi_pool_layer,device_ids=range(torch.cuda.device_count()))#----!!!!
+    #net.rpn_net = torch.nn.DataParallel(net.rpn_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    #net.rpn_cls_score_net = torch.nn.DataParallel(net.rpn_cls_score_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    #net.rpn_bbox_pred_net = torch.nn.DataParallel(net.rpn_bbox_pred_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    #net.cls_score_net = torch.nn.DataParallel(net.cls_score_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    #net.bbox_pred_net = torch.nn.DataParallel(net.bbox_pred_net,device_ids=range(torch.cuda.device_count()))#----!!!!
+    #net._roi_pool_layer = torch.nn.DataParallel(net._roi_pool_layer,device_ids=range(torch.cuda.device_count()))#----!!!!
     
     
     if args.im_in_out_json:
@@ -172,34 +173,34 @@ if __name__ == '__main__':
 
     for image_in_out in tqdm(images_in_out):
         #print(image_in_out['prefix'])
-        nofrills_feat = np.load('/data/DJKim/Datasets/HICO/hico_processed/faster_rcnn_boxes/'+image_in_out['prefix']+'fc7.npy') 
+        #nofrills_feat = np.load('/data/DJKim/Datasets/HICO/hico_processed/faster_rcnn_boxes/'+image_in_out['prefix']+'fc7.npy') 
         
         out_dir = image_in_out['out_dir']
         prefix = image_in_out['prefix']
-        if os.path.exists(os.path.join(out_dir,f'{prefix}nms_keep_indices.json')):#-----!!
-            continue
+        #if os.path.exists(os.path.join(out_dir,f'{prefix}nms_keep_indices.json')):#-----!!
+        #    continue
             
         im = cv2.imread(image_in_out['in_path'])
         
         scores, boxes, nms_keep_indices = demo(net,im)
         fc7 = net._predictions['fc7'].data.cpu().numpy()
         
-        if fc7.shape[0]==nofrills_feat.shape[0]:
-            print(np.linalg.norm(nofrills_feat-fc7))
-        else:
-            print('%d vs %d'%(fc7.shape[0],nofrills_feat.shape[0]))
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
-        pdb.set_trace()
-        #scores_path = os.path.join(out_dir,f'{prefix}scores.npy')
-        #np.save(scores_path,scores)
+        #if fc7.shape[0]==nofrills_feat.shape[0]:
+        #    print(np.linalg.norm(nofrills_feat-fc7))
+        #else:
+        #    print('%d vs %d'%(fc7.shape[0],nofrills_feat.shape[0]))
+        #if not os.path.exists(out_dir):
+        #    os.makedirs(out_dir)
+        #pdb.set_trace()
+        scores_path = os.path.join(out_dir,f'{prefix}scores.npy')
+        np.save(scores_path,scores)
 
-        #boxes_path = os.path.join(out_dir,f'{prefix}boxes.npy')
-        #np.save(boxes_path,boxes)
+        boxes_path = os.path.join(out_dir,f'{prefix}boxes.npy')
+        np.save(boxes_path,boxes)
 
-        #fc7_path = os.path.join(out_dir,f'{prefix}fc7.npy')
-        #np.save(fc7_path,fc7)
+        fc7_path = os.path.join(out_dir,f'{prefix}fc7.npy')
+        np.save(fc7_path,fc7)
         
-        #nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
-        #with open(nms_keep_indices_path,'w') as file:
-        #    json.dump(nms_keep_indices,file)
+        nms_keep_indices_path = os.path.join(out_dir,f'{prefix}nms_keep_indices.json')
+        with open(nms_keep_indices_path,'w') as file:
+            json.dump(nms_keep_indices,file)

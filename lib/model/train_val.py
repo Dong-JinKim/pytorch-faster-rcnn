@@ -165,6 +165,11 @@ class SolverWrapper(object):
     # Fresh train directly from ImageNet weights
     print('Loading initial model weights from {:s}'.format(self.pretrained_model))
     self.net.load_pretrained_cnn(torch.load(self.pretrained_model))
+    
+    saved_model_path = '/home/dongjin/Documents/msra_human_object_interaction/mmdetection/no_frills/res152_tf/res152_faster_rcnn_iter_1190000.pth'
+    state_dict = torch.load(saved_model_path)
+    self.net.load_state_dict(state_dict)
+  
     print('Loaded.')
     # Need to fix the variables before loading, so that the RGB weights are changed to BGR
     # For VGG16 it also changes the convolutional weights fc6 and fc7 to

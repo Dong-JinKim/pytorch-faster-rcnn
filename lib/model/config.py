@@ -19,7 +19,7 @@ cfg = __C
 __C.TRAIN = edict()
 
 # Initial learning rate
-__C.TRAIN.LEARNING_RATE = 0.0001 #originally 0.001
+__C.TRAIN.LEARNING_RATE = 0.000001 #originally 0.001
 
 # Momentum
 __C.TRAIN.MOMENTUM = 0.9
@@ -192,7 +192,7 @@ __C.TEST.PROPOSAL_METHOD = 'gt'
 __C.TEST.RPN_NMS_THRESH = 0.7
 
 # Number of top scoring boxes to keep before apply NMS to RPN proposals
-__C.TEST.RPN_PRE_NMS_TOP_N = 6000
+__C.TEST.RPN_PRE_NMS_TOP_N = 3000
 
 # Number of top scoring boxes to keep after applying NMS to RPN proposals
 __C.TEST.RPN_POST_NMS_TOP_N = 300
